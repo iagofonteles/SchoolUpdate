@@ -82,6 +82,8 @@ public static class Tools {
 
     public static Rect Centralize(this Rect r) => new Rect(r.position-r.size/2,r.size);
 
+    public static Sprite sprite(this Texture2D t) => Sprite.Create(t, new Rect(0, 0, t.width, t.height), Vector2.zero);
+
     // list extensions
     public static T Pop<T>(this List<T> list, int id)
         { var v = list[id]; list.RemoveAt(id); return v; }

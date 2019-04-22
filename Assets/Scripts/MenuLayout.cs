@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class MenuLayout {
+public class MenuLayout : MonoBehaviour {
+    //public static MenuLayout self { get; private set; } 
 
     private GUISkin gskin;
     private GUISkin _skin;
 
     private Texture2D bookTexture;
     private Texture2D avatarTexture;
-    private Texture2D menuBackground;
+    public static Texture2D menuBackground { get; private set; }
     private Texture2D redArrow;
 
     private MenuToDraw menuToDraw;
     private delegate void MenuToDraw();
 
-    private Rect rect;
+    //public Rect ScreenRect { get => new Rect(0, rect.y, Screen.width, Screen.height - rect.y); }
+    public static Rect ScreenRect { get; private set; }
+    public static Rect rect;
     private Vector2 scrollPosition = Vector2.zero;
     private float def_height;
 
@@ -25,7 +28,7 @@ public class MenuLayout {
     private int answerGiven = -1;
     private int powerClicked = -1;
 
-    public void Start()
+    private void Start()
     {
         gskin = Resources.Load<GUISkin>("skin_default");
         _skin = Resources.Load<GUISkin>("skin_used");
@@ -55,12 +58,14 @@ public class MenuLayout {
         MenuToDraw[] menuFunction = new MenuToDraw[] { LearnMenu, PowerMenu, null, MapMenu };
 
         rect = new Rect(0, 0, Screen.width / menuOptions.Length, def_height * 1.5f);
+        GUI.enabled = !BattleController.isInBattle;
         for (var i = 0; i < menuOptions.Length; i++) {
             if (GUI.Button(rect, menuOptions[i])) menuToDraw = menuFunction[i];
             rect.x += rect.width;
         }
-        rect.x = 0;
-        rect.y += rect.height;
+        GUI.enabled = true;
+        rect.Set(0, rect.max.y, Screen.width, Screen.height - rect.height);
+        ScreenRect = rect;
     }
 
     public void PowerMenu()
@@ -118,13 +123,14 @@ public class MenuLayout {
             float x2 = bookTexture.width / 4, y2 = bookTexture.height / 3;
             float s = PlayerStats.power_icons[0].width * 2.3f;
             bookTexture.DrawAt(x, y);
-
+            GUI.skin.button.normal.background = null;
             if (PlayerStats.power_icons[currentQuestion.type * 3 + 0].DrawButton(x + x2 * 1 - s / 2, y + y2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 0;
             if (PlayerStats.power_icons[currentQuestion.type * 3 + 1].DrawButton(x + x2 * 3 - s / 2, y + y2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 1;
             if (PlayerStats.power_icons[currentQuestion.type * 3 + 2].DrawButton(x + x2 * 2 - s / 2, y + y2 * 2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 2;
+            GUI.skin.button.normal.background = gskin.button.normal.background;
             // debug draw reroll button
             //if (GUI.Button(new Rect(0,-def_height,Screen.width,def_height), "Next Question")) currentQuestion = null;
         }
@@ -137,9 +143,8 @@ public class MenuLayout {
         /*
         var eTrans = GameObject.Find("AllEnemies").GetComponentsInChildren<Transform>();
         rect.Set(0, rect.y, Screen.width, Screen.height - rect.y);
-        foreach (Transform t in eTrans where ) {
+        foreach (Transform t in eTrans) {
             var e = Camera.main.WorldToScreenPoint(t.position);
-            print(e.ToString());
             if (!rect.Contains(e)) {
                 GUI.matrix = Matrix4x4.Rotate(Quaternion.Euler(Vector2.Angle(rect.center, e), 0, 0));
                 GUI.DrawTexture(new Rect(e.x < rect.x ? rect.x : rect.max.x, e.y < rect.y ? rect.y : rect.max.y, 16, 16), redArrow);
@@ -148,21 +153,23 @@ public class MenuLayout {
         GUI.matrix = Matrix4x4.identity;
         GUI.DrawTexture(new Rect(rect.x,rect.y,16,16), redArrow);
         */
-        BattleController.OnGUI();
     }
 
-    public void OnGUI() {
+    private void OnGUI() {
         UpperMenu();
-        if (menuToDraw != null) {
-            
+        if (menuToDraw != null)
             menuToDraw.Invoke();
-        }
     }
 
-    private void DrawChessBkg() => GUI.DrawTexture(new Rect(0, rect.y, Screen.width, Screen.height - rect.y), menuBackground);
+    public static void DrawChessBkg() => GUI.DrawTexture(new Rect(0, rect.y, Screen.width, Screen.height - rect.y), menuBackground);
 
-    public void Update()
+    private void Update()
     {
+        if(BattleController.isInBattle) {
+            menuToDraw = BattleController.OnGUI;
+            return;
+        }
+
         if (powerClicked >= 0) {
             var answerGiven = GetAnswer(ref answerPower, powerClicked);
             if (answerGiven == -2) answerPower = GiveAnswerPower(currentQuestion.type); // no answer corresponds to the choosen symbol
@@ -172,7 +179,7 @@ public class MenuLayout {
                     currentQuestion.wasRight = true;
                 } else currentQuestion.wasRight = false;
                 questionsAnswered.Add(currentQuestion);
-                QuestionsDB.Remove(currentQuestion);
+                //QuestionsDB.Remove(currentQuestion);
                 currentQuestion = null;
             }
             powerClicked = -1;
