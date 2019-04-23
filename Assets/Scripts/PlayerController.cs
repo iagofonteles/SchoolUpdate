@@ -9,9 +9,8 @@ public class PlayerController : MonoBehaviour
     {
         PlayerStats.Init();
         QuestionsDB.Init();
-        BattleController.Init();
 
-        battler = new BattleController.Battler(100, 140, 3, Resources.Load<Texture2D>("sprites/spr_avatar"));
+        battler = new BattleController.Battler(1000, 140, 3, Resources.Load<Texture2D>("sprites/spr_avatar"));
     }
 
     void Update()
@@ -28,9 +27,4 @@ public class PlayerController : MonoBehaviour
             BattleController.StartBattle();
     }
 
-    public void WinBattle() {
-        if (BattleController.enemy[0].cur_hp <= 0)
-            BattleController.EndBattle();
-        BattleController.enemy[0].cur_hp -= 25;
-    }
 }

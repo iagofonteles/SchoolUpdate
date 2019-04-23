@@ -79,7 +79,7 @@ public class MenuLayout : MonoBehaviour {
             GUILayout.BeginArea(rect);
             GUILayout.Label(PlayerStats.power_category_name[i]);
             for (var j = 0; j < 3; j++)
-                GUILayout.Label(new GUIContent(PlayerStats.power_experience[i * 3 + j] + "/" + PlayerStats.power_experience_needed[i * 3 + j], PlayerStats.power_icons[i * 3 + j]));
+                GUILayout.Label(new GUIContent(PlayerStats.power_experience[i * 3 + j] + "/" + PlayerStats.power_experience_needed[i * 3 + j], PlayerStats.power_icons[i * 3 + j].texture));
             GUILayout.EndArea();
             rect.x += rect.width;
         }
@@ -109,7 +109,7 @@ public class MenuLayout : MonoBehaviour {
             GUI.skin.label.alignment = TextAnchor.MiddleLeft;
             for (var i = 0; i < currentQuestion.answer.Length; i++) {
                 GUI.skin.label.normal.textColor = answerPower[answerOrder[i]] < 0 ? Color.gray : Color.black;
-                var ico = answerPower[answerOrder[i]] < 0 ? null : PlayerStats.power_icons[answerPower[answerOrder[i]]];
+                var ico = answerPower[answerOrder[i]] < 0 ? null : PlayerStats.power_icons[answerPower[answerOrder[i]]].texture;
                 GUILayout.Label(new GUIContent(currentQuestion.answer[answerOrder[i]], ico));
             }
             GUI.skin.label.normal.textColor = gskin.label.normal.textColor;
@@ -121,14 +121,14 @@ public class MenuLayout : MonoBehaviour {
             // draw book and power symbols
             float x = Screen.width - bookTexture.width, y = Screen.height - bookTexture.height;
             float x2 = bookTexture.width / 4, y2 = bookTexture.height / 3;
-            float s = PlayerStats.power_icons[0].width * 2.3f;
+            float s = PlayerStats.power_icons[0].texture.width * 2.3f;
             bookTexture.DrawAt(x, y);
             GUI.skin.button.normal.background = null;
-            if (PlayerStats.power_icons[currentQuestion.type * 3 + 0].DrawButton(x + x2 * 1 - s / 2, y + y2 - s / 2, 2.3f))
+            if (PlayerStats.power_icons[currentQuestion.type * 3 + 0].texture.DrawButton(x + x2 * 1 - s / 2, y + y2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 0;
-            if (PlayerStats.power_icons[currentQuestion.type * 3 + 1].DrawButton(x + x2 * 3 - s / 2, y + y2 - s / 2, 2.3f))
+            if (PlayerStats.power_icons[currentQuestion.type * 3 + 1].texture.DrawButton(x + x2 * 3 - s / 2, y + y2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 1;
-            if (PlayerStats.power_icons[currentQuestion.type * 3 + 2].DrawButton(x + x2 * 2 - s / 2, y + y2 * 2 - s / 2, 2.3f))
+            if (PlayerStats.power_icons[currentQuestion.type * 3 + 2].texture.DrawButton(x + x2 * 2 - s / 2, y + y2 * 2 - s / 2, 2.3f))
                 powerClicked = currentQuestion.type * 3 + 2;
             GUI.skin.button.normal.background = gskin.button.normal.background;
             // debug draw reroll button
@@ -165,10 +165,7 @@ public class MenuLayout : MonoBehaviour {
 
     private void Update()
     {
-        if(BattleController.isInBattle) {
-            menuToDraw = BattleController.OnGUI;
-            return;
-        }
+        if(BattleController.isInBattle) return;
 
         if (powerClicked >= 0) {
             var answerGiven = GetAnswer(ref answerPower, powerClicked);

@@ -7,11 +7,11 @@ public static class PlayerStats
     public static int[] power_experience = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     public static int[] power_experience_needed = new int[9] { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
     public static string[] power_category_name = new string[] { "Humanas", "Exatas", "Ciencias" };
-    public static Texture2D[] power_icons;
+    public static Sprite[] power_icons;
 
     public static void Init()
     {
-        power_icons = Resources.LoadAll<Texture2D>("sprites/powers");
+        power_icons = Resources.LoadAll<Sprite>("sprites/powers");
     }
 }
 
@@ -68,6 +68,18 @@ public static class QuestionsDB
     private static void AddQuestion(char type, int difficulty, string text,params string[] answer) {
         if (answer.Length > 5) Debug.LogWarning("Adding a Question with more then 5 answers may not show them correctly");
         questions[GetTypeId(type)].Add(new Question(GetTypeId(type), difficulty, text, answer));
+    }
+}
+
+public class Timer {
+    float time = 0;
+    public bool this[float t] {
+        get {
+            if ((time += Time.deltaTime) >= t) {
+                time -= t;
+                return true;
+            } else return false;
+        }
     }
 }
 
