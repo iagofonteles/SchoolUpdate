@@ -5,9 +5,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed = 2f;
     public static BattleController.Battler battler;
 
-    private void Start()
+    private void Awake()
     {
-        PlayerStats.Init();
+        iPower.Init();
         QuestionsDB.Init();
 
         battler = new BattleController.Battler(1000, 140, 3, Resources.Load<Texture2D>("sprites/spr_avatar"));
@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.transform.tag == "enemy")
-            BattleController.StartBattle();
+            BattleController.StartBattle(collision.gameObject);
     }
 
 }

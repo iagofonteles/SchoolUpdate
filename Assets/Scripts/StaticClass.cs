@@ -6,12 +6,17 @@ public static class PlayerStats
     public static int magic_power = 150;
     public static int[] power_experience = new int[9] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     public static int[] power_experience_needed = new int[9] { 20, 20, 20, 20, 20, 20, 20, 20, 20 };
-    public static string[] power_category_name = new string[] { "Humanas", "Exatas", "Ciencias" };
-    public static Sprite[] power_icons;
+}
+
+public static class iPower {
+    public static string[] type_name = new string[] { "Humanas", "Exatas", "Ciencias" };
+    public static Sprite[] icon;
+
+    public static int GetRandom { get => Random.Range(0, 9); }
 
     public static void Init()
     {
-        power_icons = Resources.LoadAll<Sprite>("sprites/powers");
+        icon = Resources.LoadAll<Sprite>("sprites/powers");
     }
 }
 
@@ -72,7 +77,7 @@ public static class QuestionsDB
 }
 
 public class Timer {
-    float time = 0;
+    public float time { get; private set; } = 0;
     public bool this[float t] {
         get {
             if ((time += Time.deltaTime) >= t) {
