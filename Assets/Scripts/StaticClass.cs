@@ -77,10 +77,11 @@ public static class QuestionsDB
 }
 
 public class Timer {
-    public float time { get; private set; } = 0;
-    public bool this[float t] {
-        get {
-            if ((time += Time.deltaTime) >= t) {
+    public float time = 0;
+    public void Reset() => time = 0;
+
+    public virtual bool this[float t] {
+        get { if ((time += Time.deltaTime) >= t) {
                 time -= t;
                 return true;
             } else return false;
@@ -88,7 +89,10 @@ public class Timer {
     }
 }
 
-public static class Tools {
+public class Cooldown : Timer { public override bool this[float t]
+        { get => time >= t ? true : (time += Time.deltaTime) >= t; } }
+
+public static class ExtensionTools {
 
     //gui extensions
     public static void DrawAt(this Texture2D t, float x, float y, float scale = 1)

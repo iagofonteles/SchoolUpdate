@@ -4,13 +4,18 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 2f;
     public static BattleController.Battler battler;
+    public static PlayerController self;
 
     private void Awake()
     {
         iPower.Init();
         QuestionsDB.Init();
+    }
 
+    private void Start()
+    {
         battler = new BattleController.Battler(1000, 140, 3, Resources.Load<Texture2D>("sprites/spr_avatar"));
+        self = this;
     }
 
     void Update()
@@ -27,4 +32,8 @@ public class PlayerController : MonoBehaviour
             BattleController.StartBattle(collision.gameObject);
     }
 
-}
+    public static Vector3 hDirection(Transform t) {
+        var d = (self.transform.position - t.position).normalized;
+        d.y = 0; return d;
+    }
+    }

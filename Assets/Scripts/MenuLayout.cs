@@ -53,17 +53,17 @@ public class MenuLayout : MonoBehaviour {
     public void UpperMenu()
     {
         GUI.skin = _skin;
+        if (BattleController.isInBattle) return;
 
         string[] menuOptions = new string[] { "Treinar", "Status", "Rank", "Mundo" };
         MenuToDraw[] menuFunction = new MenuToDraw[] { LearnMenu, PowerMenu, null, MapMenu };
 
         rect = new Rect(0, 0, Screen.width / menuOptions.Length, def_height * 1.5f);
-        GUI.enabled = !BattleController.isInBattle;
+        
         for (var i = 0; i < menuOptions.Length; i++) {
             if (GUI.Button(rect, menuOptions[i])) menuToDraw = menuFunction[i];
             rect.x += rect.width;
         }
-        GUI.enabled = true;
         rect.Set(0, rect.max.y, Screen.width, Screen.height - rect.height);
         ScreenRect = rect;
     }
@@ -177,6 +177,7 @@ public class MenuLayout : MonoBehaviour {
                 } else currentQuestion.wasRight = false;
                 questionsAnswered.Add(currentQuestion);
                 //QuestionsDB.Remove(currentQuestion);
+                print(currentQuestion.wasRight);
                 currentQuestion = null;
             }
             powerClicked = -1;

@@ -36,7 +36,7 @@ public class BattleUiPower : MonoBehaviour
 
         // hit target
         if (Vector2.Distance(transform.position, team == 0 ? BattleController.ee_ppoint : BattleController.aa_ppoint) < _move) {
-            if (team == 0) BattleController.enemy[0].cur_hp -= magic; else BattleController.ally[0].cur_hp -= magic;
+            if (team == 0) BattleController.enemy.cur_hp -= magic; else BattleController.ally.cur_hp -= magic;
             FadeOut();
         }
         slow = false;
